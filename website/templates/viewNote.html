@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="display-4 mt-2 mb-3">View Note</h1>
+                <div class="col-12">
+                  <label class="sr-only" for="title">Username</label>
+                  <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <button id="speakTitle" type="button" class="input-group-text">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </div>
+                    <input type="text" value="{{note.Title}}" class="form-control" name="title" id="title" placeholder="Title">
+                  </div>
+                </div>
+                <div class="col-12">
+                  <label class="sr-only" for="description">Description</label>
+                  <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                      <button id="speakDesc" type="button" class="input-group-text">
+                            <i class="fas fa-volume-up"></i>
+                      </button>
+                    </div>
+                      <textarea name="description" class="form-control" rows="10" id="description" placeholder="Description">{{note.Description}}</textarea>
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <button type="button" onclick="history.back()" class="btn btn-primary mb-2">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    $(document).ready(function(){
+        $('#speakTitle').click(function(){
+            readOutLoud($('#title').val())
+        });
+        $('#speakDesc').click(function(){
+            readOutLoud($('#description').val())
+        });
+        function readOutLoud(message) {
+          var speech = new SpeechSynthesisUtterance();
+
+          // Set the text and voice attributes.
+          speech.text = message;
+          speech.volume = 1;
+          speech.rate = 1;
+          speech.pitch = 1;
+
+          window.speechSynthesis.speak(speech);
+        }
+    });
+</script>
+{% endblock %}

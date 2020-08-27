@@ -1,0 +1,129 @@
+{% extends 'layout.html' %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="display-4 mt-2 mb-3">Create Note</h1>
+                <div class="mt-3">
+                    <form action="saveNote" method="GET">
+                        <div class="col-12">
+                          <label class="sr-only" for="title">Title</label>
+                          <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <button id="start-record-btn-title" type="button" class="input-group-text">
+                                    <i class="fas fa-microphone-alt-slash"></i>
+                                </button>
+                            </div>
+                            <input type="text" class="form-control" name="title" id="title" placeholder="Title">
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <label class="sr-only" for="description">Description</label>
+                          <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                              <button id="start-record-btn-desc" type="button" class="input-group-text">
+                                    <i class="fas fa-microphone-alt-slash"></i>
+                              </button>
+                            </div>
+                              <textarea name="description" class="form-control" rows="10" id="description" placeholder="Description"></textarea>
+                          </div>
+                        </div>
+                        <div class="col-auto">
+                          <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    $(document).ready(function(){
+    try {
+      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      var titleRecognition = new SpeechRecognition();
+      var descriptionRecognition = new SpeechRecognition();
+    }
+    catch(e) {
+      console.error(e);
+    }
+    titleRecognition.onstart = function() {
+      $('#title').attr('placeholder','Voice recognition activated. Try speaking into the microphone.');
+    }
+    descriptionRecognition.onstart = function() {
+      $('#description').attr('placeholder','Voice recognition activated. Try speaking into the microphone.');
+    }
+
+    titleRecognition.onspeechend = function() {
+      $('#title').attr('placeholder','You were quiet for a while so voice recognition turned itself off.');
+    }
+    descriptionRecognition.onspeechend = function() {
+      $('#description').attr('placeholder','You were quiet for a while so voice recognition turned itself off.');
+    }
+
+    titleRecognition.onerror = function(event) {
+      if(event.error == 'no-speech') {
+        $('#title').attr('placeholder','No speech was detected. Try again.');
+      };
+    }
+    descriptionRecognition.onerror = function(event) {
+      if(event.error == 'no-speech') {
+        $('#description').attr('placeholder','No speech was detected. Try again.');
+      };
+    }
+
+    titleRecognition.onresult = function(event) {
+
+      // event is a SpeechRecognitionEvent object.
+      // It holds all the lines we have captured so far.
+      // We only need the current one.
+      var current = event.resultIndex;
+
+      // Get a transcript of what was said.
+      var transcript = event.results[current][0].transcript;
+
+      // Add the current transcript to the contents of our Note.
+      var titleContent = transcript;
+      $('#title').val(titleContent);
+    }
+    descriptionRecognition.onresult = function(event) {
+
+      // event is a SpeechRecognitionEvent object.
+      // It holds all the lines we have captured so far.
+      // We only need the current one.
+      var current = event.resultIndex;
+
+      // Get a transcript of what was said.
+      var transcript = event.results[current][0].transcript;
+
+      // Add the current transcript to the contents of our Note.
+      var descContent = transcript;
+      $('#description').val(descContent);
+    }
+
+    var listeningTitle = false;
+        $('#start-record-btn-title').on('click', function(e) {
+              listeningTitle = !listeningTitle;
+              if(listeningTitle){
+                titleRecognition.start();
+                $(this).children().attr('class','fas fa-microphone-alt');
+              }else{
+                titleRecognition.stop();
+                $(this).children().attr('class','fas fa-microphone-alt-slash');
+                $('#title').attr('placeholder','Title');
+              }
+        });
+        var listeningDesc = false;
+        $('#start-record-btn-desc').on('click', function(e) {
+              listeningDesc = !listeningDesc;
+              if(listeningDesc){
+                descriptionRecognition.start();
+                $(this).children().attr('class','fas fa-microphone-alt');
+              }else{
+                descriptionRecognition.stop();
+                $(this).children().attr('class','fas fa-microphone-alt-slash');
+                $('#title').attr('placeholder','Description');
+              }
+        });
+    });
+</script>
+{% endblock %}
